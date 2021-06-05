@@ -1,17 +1,29 @@
 const express = require('express');
+const helmet = require('helmet');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const routes = require('./routes');
+const errorsHandler = require('./middlewares/errorsHandler');
+const limiter = require('./middlewares/rateLimiter');
+const {
+  requestLogger,
+  errorLogger,
+} = require('./middlewares/logger');
 
 dotenv.config();
-const { PORT = 3000 } = process.env;
+const {
+  PORT = 3000,
+  NODE_ENV,
+  DB_URL,
+} = process.env;
 
 const app = express();
-app.disable('x-powered-by');
+app.use(helmet());
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(NODE_ENV === 'production' ? DB_URL : 'mongodb://localhost:27017/bitfilmsdb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -26,6 +38,15 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(requestLogger);
+
+app.use(limiter);
+
 app.use(routes);
+
+app.use(errorLogger);
+app.use(errors()); // обработчик ошибок celebrate
+
+app.use(errorsHandler);
 
 app.listen(PORT);
