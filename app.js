@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const routes = require('./routes');
 
 dotenv.config();
 const { PORT = 3000 } = process.env;
@@ -24,5 +25,7 @@ app.use(cors({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(routes);
 
 app.listen(PORT);
