@@ -6,7 +6,7 @@ const NotFoundError = require('../errors/NotFoundError');
 //  Получить все фильмы
 const getMovies = (req, res, next) => {
   Movie.find({})
-    .then(movies => res.status(200)
+    .then((movies) => res.status(200)
       .send(movies))
     .catch(next);
 };
@@ -24,7 +24,7 @@ const createMovie = (req, res, next) => {
     nameRU,
     nameEN,
     thumbnail,
-    movieId
+    movieId,
   } = req.body;
   if (!country
     || !director
@@ -51,12 +51,12 @@ const createMovie = (req, res, next) => {
     nameEN,
     thumbnail,
     movieId,
-    owner: req.user._id
+    owner: req.user._id,
   })
-    .then(movie => res.status(200)
+    .then((movie) => res.status(200)
       .send(movie))
-    .catch(err => {
-      throw new ValidationError('Данные неверны');
+    .catch((err) => {
+      throw new ValidationError(err.message);
     })
     .catch(next);
 };
@@ -91,5 +91,5 @@ const deleteMovie = (req, res, next) => {
 module.exports = {
   getMovies,
   createMovie,
-  deleteMovie
+  deleteMovie,
 };
