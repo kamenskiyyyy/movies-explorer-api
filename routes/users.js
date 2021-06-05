@@ -1,6 +1,11 @@
-const router = require('express').Router();
+const {
+  updateProfile,
+  getMyUser
+} = require('../controllers/users');
+const router = require('express')
+  .Router();
 
-router.get('/me'); // возвращает информацию о пользователе (email и имя)
-router.patch('/me'); // обновляет информацию о пользователе (email и имя)
+router.get('/me', getMyUser); // возвращает информацию о пользователе (email и имя)
+router.patch('/me', updateProfile); // обновляет информацию о пользователе (email и имя)
 
 module.exports = router;
