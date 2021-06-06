@@ -15,15 +15,14 @@ const {
 
 dotenv.config();
 const {
-  PORT = 3030,
-  NODE_ENV,
+  PORT = 3000,
   DB_URL,
 } = process.env;
 
 const app = express();
 app.use(helmet());
 
-mongoose.connect(NODE_ENV === 'production' ? DB_URL : 'mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(DB_URL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,

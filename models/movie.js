@@ -55,26 +55,16 @@ const movieSchema = mongoose.Schema({
     ref: 'user',
   },
   movieId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
     required: true,
   },
   nameRU: {
     type: String,
     required: true,
-    validate: {
-      validator(name) {
-        return validator.isAlphanumeric(name, 'ru-RU');
-      },
-    },
   },
   nameEN: {
     type: String,
     required: true,
-    validate: {
-      validator(name) {
-        return validator.isAlphanumeric(name, 'en-US');
-      },
-    },
   },
 });
 

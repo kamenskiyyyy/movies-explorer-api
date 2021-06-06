@@ -3,8 +3,6 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const User = require('../models/user');
 const ValidationError = require('../errors/ValidationError');
-const NotFoundError = require('../errors/NotFoundError');
-const AuthError = require('../errors/AuthError');
 const DuplicateError = require('../errors/DuplicateError');
 
 dotenv.config();
@@ -23,10 +21,10 @@ const getMyUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new ValidationError('Id неверный');
+      } else {
+        next(err);
       }
-      throw new NotFoundError(err.message);
-    })
-    .catch(next);
+    });
 };
 
 // Обновить данные пользователя
@@ -49,12 +47,14 @@ const updateProfile = (req, res, next) => {
     .then((data) => res.status(200)
       .send(data))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'MongoError' || err.code === 11000) {
+        throw new DuplicateError('Пользователь с таким email уже существует');
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         throw new ValidationError('Введенные данные некорректны');
+      } else {
+        next(err);
       }
-      throw new NotFoundError(err.message);
-    })
-    .catch(next);
+    });
 };
 
 // Создание пользователя
@@ -65,7 +65,7 @@ const createUser = (req, res, next) => {
     password,
   } = req.body;
   if (!email || !name || !password) {
-    throw new AuthError('Почта или пароль неверные');
+    throw new ValidationError('Почта или пароль неверные');
   }
   bcrypt.hash(password, 10)
     .then((hash) => {
@@ -81,13 +81,14 @@ const createUser = (req, res, next) => {
             email: user.email,
           }))
         .catch((err) => {
-          if (err.name === 'MongoError' || err.code === 11000) {
+          if (err.name === 'MongoError' && err.code === 11000) {
             throw new DuplicateError('Пользователь с таким email уже существует');
           } else if (err.name === 'ValidationError' || err.name === 'CastError') {
             throw new ValidationError('Пароль или почта некорректны');
+          } else {
+            next(err);
           }
-        })
-        .catch(next);
+        });
     });
 };
 
@@ -102,10 +103,7 @@ const login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, `${NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'}`, { expiresIn: '7d' });
       res.send({ token });
     })
-    .catch((err) => {
-      throw new AuthError(err.message);
-    })
-    .catch(next);
+    .catch((err) => next(err));
 };
 
 module.exports = {
