@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const User = require('../models/user');
 const ValidationError = require('../errors/ValidationError');
 const DuplicateError = require('../errors/DuplicateError');
+const NotFoundError = require('../errors/NotFoundError');
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const {
 // Получить данные о текущем пользователе
 const getMyUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(new Error('Нет пользователя с таким id'))
+    .orFail(new NotFoundError('Нет пользователя с таким id'))
     .then((user) => res.status(200)
       .send(user))
     .catch((err) => {
@@ -24,7 +25,8 @@ const getMyUser = (req, res, next) => {
       } else {
         next(err);
       }
-    });
+    })
+    .catch(next);
 };
 
 // Обновить данные пользователя
@@ -43,7 +45,7 @@ const updateProfile = (req, res, next) => {
     new: true,
     runValidators: true,
   })
-    .orFail(new Error('Нет пользователя с таким Id'))
+    .orFail(new NotFoundError('Нет пользователя с таким Id'))
     .then((data) => res.status(200)
       .send(data))
     .catch((err) => {
@@ -54,7 +56,8 @@ const updateProfile = (req, res, next) => {
       } else {
         next(err);
       }
-    });
+    })
+    .catch(next);
 };
 
 // Создание пользователя
@@ -88,7 +91,8 @@ const createUser = (req, res, next) => {
           } else {
             next(err);
           }
-        });
+        })
+        .catch(next);
     });
 };
 

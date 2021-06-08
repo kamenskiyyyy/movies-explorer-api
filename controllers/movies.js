@@ -28,10 +28,7 @@ const createMovie = (req, res, next) => {
     thumbnail,
     movieId,
   } = req.body;
-  const REQUIRED_FIELDS = ['country', 'director', 'duration',
-    'year', 'description', 'image', 'trailer', 'nameRU', 'nameEN', 'thumbnail', 'movieId'];
-  const IS_REQ_INCOMPLETE = REQUIRED_FIELDS.some((fieldName) => req.body[fieldName] === undefined);
-  if (IS_REQ_INCOMPLETE) throw new ValidationError('Переданы не все обязательные поля');
+
   Movie.create({
     country,
     director,
@@ -65,9 +62,10 @@ const createMovie = (req, res, next) => {
       if (err.name === 'ValidationError') {
         throw new ValidationError(err.message);
       } else {
-        next();
+        next(err);
       }
-    });
+    })
+    .catch(next);
 };
 
 // Удалить фильм
@@ -82,10 +80,11 @@ const deleteMovie = (req, res, next) => {
       if (movie.owner.toString() !== userId) {
         throw new ForbiddenError('Вы не можете удалить чужой фильм');
       }
-      Movie.findByIdAndDelete(req.params.movieId)
+      return Movie.findByIdAndDelete(req.params.movieId)
         .select('-owner')
         .then((data) => res.status(200)
-          .send(data));
+          .send(data))
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -93,7 +92,8 @@ const deleteMovie = (req, res, next) => {
       } else {
         next(err);
       }
-    });
+    })
+    .catch(next);
 };
 
 module.exports = {
