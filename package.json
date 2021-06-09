@@ -1,0 +1,42 @@
+{
+  "name": "movies-explorer-api",
+  "version": "1.0.0",
+  "description": "Дипломный проект выпускника Яндекс.Практикума",
+  "main": "app.js",
+  "scripts": {
+    "lint": "npx eslint .",
+    "lint-fix": "npx eslint . --fix",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kamenskiyyyy/movies-explorer-api.git"
+  },
+  "author": "Kamenev Nikolay",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kamenskiyyyy/movies-explorer-api/issues"
+  },
+  "devDependencies": {
+    "eslint": "^7.27.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "celebrate": "^14.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-rate-limit": "^5.2.6",
+    "express-winston": "^4.1.0",
+    "helmet": "^4.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.12",
+    "validator": "^13.6.0",
+    "winston": "^3.3.3"
+  }
+}
