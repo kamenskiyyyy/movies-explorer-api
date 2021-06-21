@@ -79,7 +79,12 @@ const createUser = (req, res, next) => {
       })
         .then((user) => {
           const token = jwt.sign({ _id: user._id }, `${NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'}`, { expiresIn: '7d' });
-          res.send({ token });
+          res.send({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            token
+          });
         })
         .catch((err) => {
           if (err.name === 'MongoError' && err.code === 11000) {
@@ -103,11 +108,13 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, `${NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'}`, { expiresIn: '7d' });
-      res.status(200).send({ 
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        token });
+      res.status(200)
+        .send({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          token
+        });
     })
     .catch((err) => next(err));
 };
