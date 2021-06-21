@@ -32,10 +32,10 @@ const getMyUser = (req, res, next) => {
 // Обновить данные пользователя
 const updateProfile = (req, res, next) => {
   const {
-    email,
     name,
+    email,
   } = req.body;
-  if (!email || !name) {
+  if (!name || !email) {
     throw new ValidationError('Введенные данные некорректны');
   }
   User.findByIdAndUpdate(req.user._id, {
@@ -77,12 +77,10 @@ const createUser = (req, res, next) => {
         name,
         password: hash,
       })
-        .then((user) => res.status(200)
-          .send({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-          }))
+        .then((user) => {
+          const token = jwt.sign({ _id: user._id }, `${NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'}`, { expiresIn: '7d' });
+          res.send({ token });
+        })
         .catch((err) => {
           if (err.name === 'MongoError' && err.code === 11000) {
             throw new DuplicateError('Пользователь с таким email уже существует');
@@ -105,7 +103,11 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, `${NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'}`, { expiresIn: '7d' });
-      res.send({ token });
+      res.status(200).send({ 
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        token });
     })
     .catch((err) => next(err));
 };

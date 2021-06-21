@@ -16,7 +16,7 @@ const {
 dotenv.config();
 const {
   NODE_ENV,
-  PORT = 3000,
+  PORT = 3001,
   DB_URL,
 } = process.env;
 
