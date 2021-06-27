@@ -17,8 +17,7 @@ const {
 const getMyUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(new NotFoundError('Нет пользователя с таким id'))
-    .then((user) => res.status(200)
-      .send(user))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new ValidationError('Id неверный');
@@ -83,7 +82,7 @@ const createUser = (req, res, next) => {
             _id: user._id,
             name: user.name,
             email: user.email,
-            token
+            token,
           });
         })
         .catch((err) => {
@@ -113,7 +112,7 @@ const login = (req, res, next) => {
           _id: user._id,
           name: user.name,
           email: user.email,
-          token
+          token,
         });
     })
     .catch((err) => next(err));
